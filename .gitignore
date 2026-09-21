@@ -3,6 +3,7 @@
 
 # Environment variables / secrets
 .env
+.env.*
 
 # Python cache
 __pycache__/
@@ -15,3 +16,11 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Datasets
+data/raw/
+data/processed/
+
+# Local database files
+*.db
+*.sqlite
