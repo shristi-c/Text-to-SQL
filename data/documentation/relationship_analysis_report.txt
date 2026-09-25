@@ -1,0 +1,115 @@
+
+================================================================================
+1. IT DATASET RELATIONSHIP ANALYSIS
+================================================================================
+
+Dataset: aa_dataset-tickets-multi-lang-5-2-50-version.csv
+Rows: 28587
+subject: unique=24750, duplicates=3837
+body: unique=28587, duplicates=0
+answer: unique=28581, duplicates=6
+Duplicate rows based on ['subject', 'body', 'answer']: 0
+
+Dataset: dataset-tickets-multi-lang-4-20k.csv
+Rows: 20000
+subject: unique=18540, duplicates=1460
+body: unique=19999, duplicates=1
+answer: unique=19997, duplicates=3
+Duplicate rows based on ['subject', 'body', 'answer']: 0
+
+Dataset: dataset-tickets-multi-lang3-4k.csv
+Rows: 4000
+subject: unique=3534, duplicates=466
+body: unique=4000, duplicates=0
+answer: unique=4000, duplicates=0
+Duplicate rows based on ['subject', 'body', 'answer']: 0
+
+================================================================================
+1A. IT DATASET 1 vs DATASET 2 OVERLAP
+================================================================================
+Matching records using subject + body + answer: 8248
+type: same=8248, different=0
+queue: same=8248, different=0
+priority: same=8248, different=0
+language: same=8248, different=0
+
+================================================================================
+1B. IT DATASET 3 RELATIONSHIP
+================================================================================
+Dataset 1 vs Dataset 3 matching records: 0
+Dataset 2 vs Dataset 3 matching records: 0
+
+================================================================================
+2. RETAIL DATASET RELATIONSHIP ANALYSIS
+================================================================================
+Rows: 9994
+
+Candidate key uniqueness:
+Row ID: unique=9994, duplicates=0
+Order ID: unique=5009, duplicates=4985
+Customer ID: unique=793, duplicates=9201
+Customer Name: unique=793, duplicates=9201
+Product ID: unique=1862, duplicates=8132
+Product Name: unique=1850, duplicates=8144
+
+================================================================================
+2A. RETAIL ATTRIBUTE CONSISTENCY
+================================================================================
+Customer ID -> Customer Name: inconsistent keys=0
+Product ID -> Product Name: inconsistent keys=32
+
+Orders with multiple order lines: 2471
+Maximum lines for one order: 14
+Row ID unique: True
+
+================================================================================
+3. AIRLINE DATABASE RELATIONSHIP ANALYSIS
+================================================================================
+
+aircrafts_data: 9 rows
+aircraft_code unique: True
+
+airports_data: 104 rows
+airport_code unique: True
+
+boarding_passes: 579686 rows
+
+bookings: 262788 rows
+book_ref unique: True
+
+flights: 33121 rows
+flight_id unique: True
+
+seats: 1339 rows
+['aircraft_code', 'seat_no'] unique combination: True
+
+ticket_flights: 1045726 rows
+
+tickets: 366733 rows
+ticket_no unique: True
+
+================================================================================
+3A. AIRLINE FOREIGN KEY VALIDATION
+================================================================================
+tickets.book_ref -> bookings.book_ref: invalid references=0
+ticket_flights.ticket_no -> tickets.ticket_no: invalid references=0
+ticket_flights.flight_id -> flights.flight_id: invalid references=0
+flights.aircraft_code -> aircrafts_data.aircraft_code: invalid references=0
+flights.departure_airport -> airports_data.airport_code: invalid references=0
+flights.arrival_airport -> airports_data.airport_code: invalid references=0
+boarding_passes.(ticket_no, flight_id) -> ticket_flights.(ticket_no, flight_id): invalid references=0
+boarding_passes -> seats through (flight_id -> aircraft_code, seat_no): invalid references=0
+
+================================================================================
+3B. AIRLINE IMPORTANT VALUES
+================================================================================
+Flight status values: {'Arrived': 16707, 'Scheduled': 15383, 'On Time': 518, 'Cancelled': 414, 'Departed': 58, 'Delayed': 41}
+Seat fare conditions: {'Economy': 1139, 'Business': 152, 'Comfort': 48}
+Ticket flight fare conditions: {'Economy': 920793, 'Business': 107642, 'Comfort': 17291}
+
+================================================================================
+3C. AIRLINE IMPORTANT NULLS
+================================================================================
+flights.actual_departure nulls: 0
+flights.actual_arrival nulls: 0
+boarding_passes.seat_no nulls: 0

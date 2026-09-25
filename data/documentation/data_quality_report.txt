@@ -1,0 +1,1046 @@
+TEXT-TO-SQL DATA QUALITY REPORT
+
+Project directory:
+C:\Users\shris\OneDrive\Desktop\Text-to-SQL
+
+======================================================================
+1. IT DATASETS
+======================================================================
+
+
+FILE: aa_dataset-tickets-multi-lang-5-2-50-version.csv
+Rows: 28,587
+Columns: 16
+
+Columns:
+subject, body, answer, type, queue, priority, language, version, tag_1, tag_2, tag_3, tag_4, tag_5, tag_6, tag_7, tag_8
+
+Data types:
+subject       str
+body          str
+answer        str
+type          str
+queue         str
+priority      str
+language      str
+version     int64
+tag_1         str
+tag_2         str
+tag_3         str
+tag_4         str
+tag_5         str
+tag_6         str
+tag_7         str
+tag_8         str
+
+Missing values:
+subject     3838
+answer         7
+tag_2         13
+tag_3        136
+tag_4       3058
+tag_5      14042
+tag_6      22713
+tag_7      26547
+tag_8      28022
+
+Duplicate rows: 0
+
+Important categorical values:
+
+--- type ---
+type
+Incident    11466
+Request      8187
+Problem      6012
+Change       2922
+
+--- queue ---
+queue
+Technical Support                  8362
+Product Support                    5252
+Customer Service                   4268
+IT Support                         3433
+Billing and Payments               2788
+Returns and Exchanges              1437
+Service Outages and Maintenance    1148
+Sales and Pre-Sales                 918
+Human Resources                     576
+General Inquiry                     405
+
+--- priority ---
+priority
+medium    11515
+high      11178
+low        5894
+
+--- language ---
+language
+en    16338
+de    12249
+
+--- version ---
+version
+400    18599
+52      9119
+51       869
+
+Tag frequencies:
+
+tag_1:
+tag_1
+Security         5880
+Bug              5337
+Feedback         3557
+Feature          3081
+Performance      3065
+Billing          1382
+Outage           1199
+Network          1063
+Product           611
+Documentation     586
+Crash             463
+Marketing         410
+Disruption        353
+IT                239
+Login             185
+
+tag_2:
+tag_2
+Performance      5903
+IT               2697
+Documentation    1970
+Disruption       1850
+Sales            1516
+Network          1448
+Outage           1440
+Feedback         1400
+Bug              1089
+Feature          1077
+Payment           966
+Product           715
+Security          597
+Crash             545
+Virus             513
+
+tag_3:
+tag_3
+IT               6121
+Tech Support     2635
+Performance      2611
+Disruption       1877
+Documentation    1610
+Feature          1494
+Feedback         1470
+Outage           1115
+Network           874
+Product           741
+Hardware          556
+Bug               544
+Recovery          469
+Marketing         317
+Support           316
+
+tag_4:
+tag_4
+Tech Support     6568
+IT               4809
+NaN              3058
+Documentation    1303
+Performance      1244
+Disruption       1242
+Recovery         1190
+Feedback          898
+Feature           661
+Outage            434
+Sales             394
+Bug               390
+Maintenance       374
+Support           289
+Product           282
+
+tag_5:
+tag_5
+NaN              14042
+Tech Support      4617
+IT                1932
+Recovery           668
+Documentation      557
+Feedback           481
+Performance        408
+Disruption         333
+Support            279
+Feature            272
+Maintenance        238
+Software           171
+Outage             139
+Sales              122
+Integration        120
+
+tag_6:
+tag_6
+NaN              22713
+Tech Support      1847
+IT                 435
+Support            132
+Recovery           129
+Documentation      120
+Performance        119
+Feedback           107
+Software            96
+Maintenance         93
+Disruption          79
+System              60
+Feature             54
+Issue               49
+Integration         48
+
+tag_7:
+tag_7
+NaN                26547
+Tech Support         391
+Support               80
+IT                    77
+Integration           32
+Troubleshooting       26
+Assistance            25
+Recovery              24
+Maintenance           24
+Issue                 23
+Strategy              23
+Feedback              21
+Performance           21
+Growth                21
+System                21
+
+tag_8:
+tag_8
+NaN                 28022
+Tech Support           77
+Support                36
+IT                     15
+Assistance             15
+Guidance               13
+Issue                  12
+Update                 11
+Online Presence        10
+Improvement             7
+Customer Support        7
+Implementation          7
+Growth                  6
+Platform                6
+SaaS                    5
+
+FILE: dataset-tickets-multi-lang-4-20k.csv
+Rows: 20,000
+Columns: 15
+
+Columns:
+subject, body, answer, type, queue, priority, language, tag_1, tag_2, tag_3, tag_4, tag_5, tag_6, tag_7, tag_8
+
+Data types:
+subject     str
+body        str
+answer      str
+type        str
+queue       str
+priority    str
+language    str
+tag_1       str
+tag_2       str
+tag_3       str
+tag_4       str
+tag_5       str
+tag_6       str
+tag_7       str
+tag_8       str
+
+Missing values:
+subject     1461
+body           2
+answer         4
+tag_2         46
+tag_3         95
+tag_4       1539
+tag_5       6909
+tag_6      12649
+tag_7      16072
+tag_8      18093
+
+Duplicate rows: 0
+
+Important categorical values:
+
+--- type ---
+type
+Incident    7978
+Request     5763
+Problem     4184
+Change      2075
+
+--- queue ---
+queue
+Technical Support                  5824
+Product Support                    3708
+Customer Service                   3152
+IT Support                         2292
+Billing and Payments               2086
+Returns and Exchanges              1001
+Service Outages and Maintenance     764
+Sales and Pre-Sales                 572
+Human Resources                     338
+General Inquiry                     263
+
+--- priority ---
+priority
+medium    8144
+high      7801
+low       4055
+
+--- language ---
+language
+en    11923
+de     8077
+
+Tag frequencies:
+
+tag_1:
+tag_1
+Technical        5034
+Security         3276
+Bug              2328
+Feedback         1852
+Feature          1343
+Billing          1103
+Customer         1044
+Performance       800
+Outage            556
+Crash             479
+Network           419
+Product           274
+Login             238
+Documentation     190
+Sales             123
+
+tag_2:
+tag_2
+Performance      2795
+Bug              2046
+Product          1413
+IT               1203
+Security         1070
+Documentation     979
+Sales             891
+Feedback          840
+Customer          656
+Network           640
+Integration       621
+Breach            619
+Payment           578
+Disruption        548
+Feature           538
+
+tag_3:
+tag_3
+IT               3309
+Performance      1723
+Bug              1298
+Tech Support     1296
+Documentation    1290
+Feedback         1263
+Feature           908
+Product           670
+Guidance          504
+Outage            487
+Integration       457
+Network           455
+Crash             406
+Disruption        332
+Hardware          293
+
+tag_4:
+tag_4
+Tech Support     3436
+IT               2402
+Documentation    1735
+NaN              1539
+Resolution       1126
+Feedback          950
+Guidance          871
+Performance       801
+Bug               598
+Feature           420
+Crash             353
+Maintenance       279
+Software          253
+Disruption        235
+Sales             224
+
+tag_5:
+tag_5
+NaN              6909
+Tech Support     2287
+Documentation    1489
+Resolution       1430
+Feedback          852
+IT                837
+Guidance          687
+Performance       296
+Maintenance       243
+Feature           196
+Bug               181
+Incident          165
+Customer          148
+Investigation     141
+Crash             141
+
+tag_6:
+tag_6
+NaN              12649
+Resolution         841
+Documentation      822
+Tech Support       759
+Feedback           593
+Guidance           350
+Incident           230
+Follow-Up          210
+Maintenance        193
+IT                 149
+Support            141
+Performance        118
+Customer           110
+Crash               90
+Investigation       87
+
+tag_7:
+tag_7
+NaN              16072
+Resolution         417
+Documentation      395
+Feedback           299
+Follow-Up          206
+Guidance           165
+Maintenance        127
+Tech Support       121
+Incident           113
+Support            105
+Performance         74
+Customer            73
+Communication       65
+Investigation       52
+Account             48
+
+tag_8:
+tag_8
+NaN              18093
+Documentation      162
+Resolution         144
+Feedback           118
+Follow-Up          118
+Incident            65
+Guidance            63
+Support             61
+Maintenance         54
+Communication       50
+Account             28
+Investigation       27
+Notification        25
+Customer            24
+Performance         22
+
+FILE: dataset-tickets-multi-lang3-4k.csv
+Rows: 4,000
+Columns: 17
+
+Columns:
+subject, body, answer, type, queue, priority, language, business_type, tag_1, tag_2, tag_3, tag_4, tag_5, tag_6, tag_7, tag_8, tag_9
+
+Data types:
+subject              str
+body                 str
+answer               str
+type                 str
+queue                str
+priority             str
+language             str
+business_type        str
+tag_1                str
+tag_2                str
+tag_3                str
+tag_4                str
+tag_5                str
+tag_6                str
+tag_7                str
+tag_8                str
+tag_9            float64
+
+Missing values:
+subject     467
+body          1
+tag_4         1
+tag_5       637
+tag_6      1819
+tag_7      2955
+tag_8      3731
+tag_9      4000
+
+Duplicate rows: 0
+
+Important categorical values:
+
+--- type ---
+type
+Incident    1608
+Request     1097
+Problem      853
+Change       442
+
+--- queue ---
+queue
+Technical Support                  1317
+Product Support                     690
+Customer Service                    627
+IT Support                          445
+Billing and Payments                338
+Returns and Exchanges               197
+Service Outages and Maintenance     141
+Sales and Pre-Sales                 137
+General Inquiry                      55
+Human Resources                      53
+
+--- priority ---
+priority
+high      1649
+medium    1603
+low        748
+
+--- language ---
+language
+en    1391
+de     848
+es     812
+fr     476
+pt     473
+
+--- business_type ---
+business_type
+IT Services                     1716
+Tech Online Store               1395
+IT Consulting Firm               391
+Software Development Company     311
+Online Store                     171
+IT Consulting Service              7
+Pit Services                       5
+Adobe Photoshop 2024               2
+_IT_Services_                      2
+
+Tag frequencies:
+
+tag_1:
+tag_1
+Technical Support        2126
+Billing Issue             308
+IT Support                288
+Urgent Issue              263
+Returns and Exchanges     199
+Product Support           177
+Customer Service          125
+Network Issue             117
+Service Outage             91
+Service Disruption         66
+Sales Inquiry              48
+Software Bug               33
+Login Issue                29
+Warranty Claim             19
+Performance Tuning         15
+
+tag_2:
+tag_2
+Product Support       1091
+Technical Support      417
+Urgent Issue           371
+IT Support             341
+Software Bug           328
+Customer Service       299
+Service Disruption     201
+Network Issue          163
+Hardware Failure       133
+Technical Guidance      94
+Account Assistance      61
+Performance Tuning      61
+Billing Issue           45
+Sales Inquiry           38
+Service Outage          35
+
+tag_3:
+tag_3
+Urgent Issue          420
+Hardware Failure      389
+Problem Resolution    370
+Software Bug          352
+Technical Support     294
+Product Support       252
+Customer Service      198
+Service Disruption    198
+Performance Tuning    180
+IT Support            179
+Account Assistance    173
+Network Issue         133
+General Inquiry        99
+Technical Guidance     90
+System Maintenance     77
+
+tag_4:
+tag_4
+Problem Resolution    1089
+Urgent Issue           274
+Technical Guidance     203
+Technical Support      174
+Product Support        158
+Software Bug           150
+Performance Tuning     150
+Customer Service       149
+Hardware Failure       145
+Service Disruption     141
+General Inquiry        136
+Account Assistance     135
+System Maintenance     123
+Order Issue             95
+Incident Report         94
+
+tag_5:
+tag_5
+Problem Resolution    802
+NaN                   637
+Technical Guidance    250
+Urgent Issue          243
+Service Recovery      188
+General Inquiry       176
+Service Disruption    168
+Customer Service      135
+Performance Tuning    115
+Product Support       110
+System Maintenance    108
+Technical Support     104
+Account Assistance    102
+Incident Report        98
+Software Bug           83
+
+tag_6:
+tag_6
+NaN                     1819
+Problem Resolution       420
+Technical Guidance       228
+Service Recovery         206
+Urgent Issue             123
+Customer Service         120
+General Inquiry          107
+Performance Tuning        96
+Service Notification      90
+Service Disruption        89
+Incident Report           73
+System Maintenance        65
+Software Bug              59
+Account Assistance        49
+IT Support                45
+
+tag_7:
+tag_7
+NaN                     2955
+Service Recovery         131
+Problem Resolution       120
+Technical Guidance       119
+Performance Tuning        90
+Urgent Issue              61
+General Inquiry           52
+Service Notification      45
+Customer Service          43
+Incident Report           42
+System Maintenance        34
+Software Bug              29
+Account Assistance        27
+Service Disruption        24
+IT Support                24
+
+tag_8:
+tag_8
+NaN                      3731
+Technical Guidance         33
+Service Recovery           32
+Performance Tuning         28
+System Maintenance         17
+Problem Resolution         14
+Urgent Issue               11
+Service Notification       11
+Account Assistance         10
+General Inquiry             8
+IT Support                  8
+Customer Service            8
+Software Bug                7
+Documentation Request       7
+Critical Failure            6
+
+tag_9:
+tag_9
+NaN    4000
+
+======================================================================
+IT SCHEMA COMPARISON
+======================================================================
+
+
+aa_dataset-tickets-multi-lang-5-2-50-version.csv
+Number of columns: 16
+Columns: ['subject', 'body', 'answer', 'type', 'queue', 'priority', 'language', 'version', 'tag_1', 'tag_2', 'tag_3', 'tag_4', 'tag_5', 'tag_6', 'tag_7', 'tag_8']
+
+dataset-tickets-multi-lang-4-20k.csv
+Number of columns: 15
+Columns: ['subject', 'body', 'answer', 'type', 'queue', 'priority', 'language', 'tag_1', 'tag_2', 'tag_3', 'tag_4', 'tag_5', 'tag_6', 'tag_7', 'tag_8']
+
+dataset-tickets-multi-lang3-4k.csv
+Number of columns: 17
+Columns: ['subject', 'body', 'answer', 'type', 'queue', 'priority', 'language', 'business_type', 'tag_1', 'tag_2', 'tag_3', 'tag_4', 'tag_5', 'tag_6', 'tag_7', 'tag_8', 'tag_9']
+
+======================================================================
+IT DATASET OVERLAP CHECK
+======================================================================
+
+
+aa_dataset-tickets-multi-lang-5-2-50-version.csv <-> dataset-tickets-multi-lang-4-20k.csv
+Common columns: ['tag_5', 'tag_6', 'priority', 'tag_7', 'subject', 'tag_1', 'type', 'tag_2', 'tag_8', 'tag_4', 'body', 'language', 'tag_3', 'answer', 'queue']
+Exact matches using ['subject', 'body', 'answer']: 8,248
+
+aa_dataset-tickets-multi-lang-5-2-50-version.csv <-> dataset-tickets-multi-lang3-4k.csv
+Common columns: ['tag_5', 'tag_6', 'priority', 'tag_7', 'subject', 'tag_1', 'type', 'tag_2', 'tag_8', 'tag_4', 'body', 'language', 'tag_3', 'answer', 'queue']
+Exact matches using ['subject', 'body', 'answer']: 0
+
+dataset-tickets-multi-lang-4-20k.csv <-> dataset-tickets-multi-lang3-4k.csv
+Common columns: ['tag_5', 'tag_6', 'priority', 'tag_7', 'subject', 'tag_1', 'type', 'tag_2', 'tag_8', 'tag_4', 'body', 'language', 'tag_3', 'answer', 'queue']
+Exact matches using ['subject', 'body', 'answer']: 0
+
+======================================================================
+2. RETAIL DATASET
+======================================================================
+
+Sheets: ['Retails Order Full Dataset', 'Calendar Table']
+
+------------------------------------------------------------
+SHEET: Retails Order Full Dataset
+------------------------------------------------------------
+Rows: 9,994
+Columns: 23
+
+Columns:
+Row ID, Order ID, Order Date, Ship Date, Ship Mode, Customer ID, Customer Name, Segment, Country, City, State, Postal Code, Region, Retail Sales People, Product ID, Category, Sub-Category, Product Name, Returned, Sales, Quantity, Discount, Profit
+
+Data types:
+Row ID                          int64
+Order ID                          str
+Order Date             datetime64[us]
+Ship Date              datetime64[us]
+Ship Mode                         str
+Customer ID                       str
+Customer Name                     str
+Segment                           str
+Country                           str
+City                              str
+State                             str
+Postal Code                     int64
+Region                            str
+Retail Sales People               str
+Product ID                        str
+Category                          str
+Sub-Category                      str
+Product Name                      str
+Returned                          str
+Sales                         float64
+Quantity                        int64
+Discount                      float64
+Profit                        float64
+
+Missing values:
+No missing values.
+
+Duplicate rows: 0
+
+Important categorical values:
+
+--- Ship Mode ---
+Ship Mode
+Standard Class    5968
+Second Class      1945
+First Class       1538
+Same Day           543
+
+--- Segment ---
+Segment
+Consumer       5191
+Corporate      3020
+Home Office    1783
+
+--- Country ---
+Country
+United States    9994
+
+--- Region ---
+Region
+West       3203
+East       2848
+Central    2323
+South      1620
+
+--- Category ---
+Category
+Office Supplies    6026
+Furniture          2121
+Technology         1847
+
+--- Sub-Category ---
+Sub-Category
+Binders        1523
+Paper          1370
+Furnishings     957
+Phones          889
+Storage         846
+Art             796
+Accessories     775
+Chairs          617
+Appliances      466
+Labels          364
+Tables          319
+Envelopes       254
+Bookcases       228
+Fasteners       217
+Supplies        190
+Machines        115
+Copiers          68
+
+--- Returned ---
+Returned
+Not    9194
+Yes     800
+
+Unique counts:
+Order ID: 5,009
+Customer ID: 793
+Product ID: 1,862
+Customer Name: 793
+Product Name: 1,850
+
+Order Date range: 2014-01-02 00:00:00 -> 2017-12-30 00:00:00
+
+Ship Date range: 2014-01-15 00:00:00 -> 2018-05-01 00:00:00
+
+Numerical summaries:
+
+Sales:
+count     9994.000000
+mean       229.858001
+std        623.245101
+min          0.444000
+25%         17.280000
+50%         54.490000
+75%        209.940000
+max      22638.480000
+
+Quantity:
+count    9994.000000
+mean        3.789574
+std         2.225110
+min         1.000000
+25%         2.000000
+50%         3.000000
+75%         5.000000
+max        14.000000
+
+Discount:
+count    9994.000000
+mean        0.156203
+std         0.206452
+min         0.000000
+25%         0.000000
+50%         0.200000
+75%         0.200000
+max         0.800000
+
+Profit:
+count    9994.000000
+mean       28.656896
+std       234.260108
+min     -6599.978000
+25%         1.728750
+50%         8.666500
+75%        29.364000
+max      8399.976000
+
+Potential data-quality checks:
+Zero quantity: 0
+Negative quantity: 0
+Negative profit: 1,871
+Discount < 0: 0
+Discount > 1: 0
+
+------------------------------------------------------------
+SHEET: Calendar Table
+------------------------------------------------------------
+Rows: 1,826
+Columns: 12
+
+Columns:
+Date, Year, Quarter, Quarter (Q), Quarter & Year, Month, Month Name, Month & Year, Week of Year, Week of Year (W), Day of Week, Day Name
+
+Data types:
+Date                datetime64[us]
+Year                         int64
+Quarter                      int64
+Quarter (Q)                    str
+Quarter & Year                 str
+Month                        int64
+Month Name                     str
+Month & Year                   str
+Week of Year                 int64
+Week of Year (W)               str
+Day of Week                  int64
+Day Name                       str
+
+Missing values:
+No missing values.
+
+Duplicate rows: 0
+
+======================================================================
+3. AIRLINE DATABASE
+======================================================================
+
+Number of tables: 8
+
+------------------------------------------------------------
+TABLE: aircrafts_data
+------------------------------------------------------------
+Rows: 9
+
+Columns:
+aircraft_code | type=character(3) | not_null=1 | pk=0
+model | type=jsonb | not_null=1 | pk=0
+range | type=INTEGER | not_null=1 | pk=0
+
+NULL counts:
+
+Foreign keys:
+No declared foreign keys.
+
+------------------------------------------------------------
+TABLE: airports_data
+------------------------------------------------------------
+Rows: 104
+
+Columns:
+airport_code | type=character(3) | not_null=1 | pk=0
+airport_name | type=jsonb | not_null=1 | pk=0
+city | type=jsonb | not_null=1 | pk=0
+coordinates | type=point | not_null=1 | pk=0
+timezone | type=TEXT | not_null=1 | pk=0
+
+NULL counts:
+
+Foreign keys:
+No declared foreign keys.
+
+------------------------------------------------------------
+TABLE: boarding_passes
+------------------------------------------------------------
+Rows: 579,686
+
+Columns:
+ticket_no | type=character(13) | not_null=1 | pk=0
+flight_id | type=INTEGER | not_null=1 | pk=0
+boarding_no | type=INTEGER | not_null=1 | pk=0
+seat_no | type=character varying(4) | not_null=1 | pk=0
+
+NULL counts:
+
+Foreign keys:
+No declared foreign keys.
+
+------------------------------------------------------------
+TABLE: bookings
+------------------------------------------------------------
+Rows: 262,788
+
+Columns:
+book_ref | type=character(6) | not_null=1 | pk=0
+book_date | type=timestamp with time zone | not_null=1 | pk=0
+total_amount | type=numeric(10,2) | not_null=1 | pk=0
+
+NULL counts:
+
+Foreign keys:
+No declared foreign keys.
+
+------------------------------------------------------------
+TABLE: flights
+------------------------------------------------------------
+Rows: 33,121
+
+Columns:
+flight_id | type=INTEGER | not_null=1 | pk=0
+flight_no | type=character(6) | not_null=1 | pk=0
+scheduled_departure | type=timestamp with time zone | not_null=1 | pk=0
+scheduled_arrival | type=timestamp with time zone | not_null=1 | pk=0
+departure_airport | type=character(3) | not_null=1 | pk=0
+arrival_airport | type=character(3) | not_null=1 | pk=0
+status | type=character varying(20) | not_null=1 | pk=0
+aircraft_code | type=character(3) | not_null=1 | pk=0
+actual_departure | type=timestamp with time zone | not_null=0 | pk=0
+actual_arrival | type=timestamp with time zone | not_null=0 | pk=0
+
+NULL counts:
+
+Foreign keys:
+No declared foreign keys.
+
+------------------------------------------------------------
+TABLE: seats
+------------------------------------------------------------
+Rows: 1,339
+
+Columns:
+aircraft_code | type=character(3) | not_null=1 | pk=0
+seat_no | type=character varying(4) | not_null=1 | pk=0
+fare_conditions | type=character varying(10) | not_null=1 | pk=0
+
+NULL counts:
+
+Foreign keys:
+No declared foreign keys.
+
+------------------------------------------------------------
+TABLE: ticket_flights
+------------------------------------------------------------
+Rows: 1,045,726
+
+Columns:
+ticket_no | type=character(13) | not_null=1 | pk=0
+flight_id | type=INTEGER | not_null=1 | pk=0
+fare_conditions | type=character varying(10) | not_null=1 | pk=0
+amount | type=numeric(10,2) | not_null=1 | pk=0
+
+NULL counts:
+
+Foreign keys:
+No declared foreign keys.
+
+------------------------------------------------------------
+TABLE: tickets
+------------------------------------------------------------
+Rows: 366,733
+
+Columns:
+ticket_no | type=character(13) | not_null=1 | pk=0
+book_ref | type=character(6) | not_null=1 | pk=0
+passenger_id | type=character varying(20) | not_null=1 | pk=0
+
+NULL counts:
+
+Foreign keys:
+No declared foreign keys.
