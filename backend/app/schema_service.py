@@ -3,10 +3,19 @@ from sqlalchemy import inspect
 from backend.app.database import engine
 
 
-def get_database_schema():
-    inspector = inspect(engine)
+schemas = ["it", "retail", "airline"]
 
-    schemas = ["it", "retail", "airline"]
+_cached_schema = None
+
+
+def get_database_schema():
+    global _cached_schema
+
+    # Return cached schema if already loaded
+    if _cached_schema is not None:
+        return _cached_schema
+
+    inspector = inspect(engine)
 
     database_schema = {}
 
@@ -30,4 +39,7 @@ def get_database_schema():
                 for column in columns
             ]
 
-    return database_schema
+    # Store schema in memory
+    _cached_schema = database_schema
+
+    return _cached_schema
