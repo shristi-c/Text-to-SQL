@@ -1,0 +1,362 @@
+[
+  {
+    "id": 1,
+    "domain": "it",
+    "question": "How many IT tickets are there?",
+    "expected_sql": "SELECT COUNT(*) FROM it.it_tickets"
+  },
+  {
+    "id": 2,
+    "domain": "it",
+    "question": "How many IT ticket tags are there?",
+    "expected_sql": "SELECT COUNT(*) FROM it.it_tags"
+  },
+  {
+    "id": 3,
+    "domain": "it",
+    "question": "How many tickets have high priority?",
+    "expected_sql": "SELECT COUNT(*) FROM it.it_tickets WHERE priority = 'high'"
+  },
+  {
+    "id": 4,
+    "domain": "it",
+    "question": "How many tickets have low priority?",
+    "expected_sql": "SELECT COUNT(*) FROM it.it_tickets WHERE priority = 'low'"
+  },
+  {
+    "id": 5,
+    "domain": "it",
+    "question": "How many tickets are in each priority level?",
+    "expected_sql": "SELECT priority, COUNT(*) FROM it.it_tickets GROUP BY priority"
+  },
+  {
+    "id": 6,
+    "domain": "it",
+    "question": "How many tickets are in each queue?",
+    "expected_sql": "SELECT queue, COUNT(*) FROM it.it_tickets GROUP BY queue"
+  },
+  {
+    "id": 7,
+    "domain": "it",
+    "question": "How many tickets are in each language?",
+    "expected_sql": "SELECT language, COUNT(*) FROM it.it_tickets GROUP BY language"
+  },
+  {
+    "id": 8,
+    "domain": "it",
+    "question": "How many tickets are in each business type?",
+    "expected_sql": "SELECT business_type, COUNT(*) FROM it.it_tickets GROUP BY business_type"
+  },
+  {
+    "id": 9,
+    "domain": "it",
+    "question": "What are the different ticket types?",
+    "expected_sql": "SELECT DISTINCT type FROM it.it_tickets"
+  },
+  {
+    "id": 10,
+    "domain": "it",
+    "question": "How many tickets have a missing subject?",
+    "expected_sql": "SELECT COUNT(*) FROM it.it_tickets WHERE subject IS NULL"
+  },
+  {
+    "id": 11,
+    "domain": "it",
+    "question": "How many tickets have a missing answer?",
+    "expected_sql": "SELECT COUNT(*) FROM it.it_tickets WHERE answer IS NULL"
+  },
+  {
+    "id": 12,
+    "domain": "it",
+    "question": "What is the average version number of the tickets?",
+    "expected_sql": "SELECT AVG(version) FROM it.it_tickets"
+  },
+  {
+    "id": 13,
+    "domain": "it",
+    "question": "How many tickets are associated with each version?",
+    "expected_sql": "SELECT version, COUNT(*) FROM it.it_tickets GROUP BY version"
+  },
+  {
+    "id": 14,
+    "domain": "it",
+    "question": "Which queues have more than 1000 tickets?",
+    "expected_sql": "SELECT queue, COUNT(*) FROM it.it_tickets GROUP BY queue HAVING COUNT(*) > 1000"
+  },
+  {
+    "id": 15,
+    "domain": "it",
+    "question": "What are the most common tags?",
+    "expected_sql": "SELECT tag, COUNT(*) FROM it.it_tags GROUP BY tag ORDER BY COUNT(*) DESC LIMIT 10"
+  },
+  {
+    "id": 16,
+    "domain": "retail",
+    "question": "How many customers are there?",
+    "expected_sql": "SELECT COUNT(*) FROM retail.customers"
+  },
+  {
+    "id": 17,
+    "domain": "retail",
+    "question": "How many products are there?",
+    "expected_sql": "SELECT COUNT(*) FROM retail.products"
+  },
+  {
+    "id": 18,
+    "domain": "retail",
+    "question": "How many orders are there?",
+    "expected_sql": "SELECT COUNT(*) FROM retail.orders"
+  },
+  {
+    "id": 19,
+    "domain": "retail",
+    "question": "How many order items are there?",
+    "expected_sql": "SELECT COUNT(*) FROM retail.order_items"
+  },
+  {
+    "id": 20,
+    "domain": "retail",
+    "question": "How many customers are in each segment?",
+    "expected_sql": "SELECT segment, COUNT(*) FROM retail.customers GROUP BY segment"
+  },
+  {
+    "id": 21,
+    "domain": "retail",
+    "question": "How many orders are in each region?",
+    "expected_sql": "SELECT region, COUNT(*) FROM retail.orders GROUP BY region"
+  },
+  {
+    "id": 22,
+    "domain": "retail",
+    "question": "What is the total sales?",
+    "expected_sql": "SELECT SUM(sales) FROM retail.order_items"
+  },
+  {
+    "id": 23,
+    "domain": "retail",
+    "question": "What is the total profit?",
+    "expected_sql": "SELECT SUM(profit) FROM retail.order_items"
+  },
+  {
+    "id": 24,
+    "domain": "retail",
+    "question": "What is the average sales value per order item?",
+    "expected_sql": "SELECT AVG(sales) FROM retail.order_items"
+  },
+  {
+    "id": 25,
+    "domain": "retail",
+    "question": "What is the average profit per order item?",
+    "expected_sql": "SELECT AVG(profit) FROM retail.order_items"
+  },
+  {
+    "id": 26,
+    "domain": "retail",
+    "question": "What are the different product categories?",
+    "expected_sql": "SELECT DISTINCT category FROM retail.products"
+  },
+  {
+    "id": 27,
+    "domain": "retail",
+    "question": "How many products are in each category?",
+    "expected_sql": "SELECT category, COUNT(*) FROM retail.products GROUP BY category"
+  },
+  {
+    "id": 28,
+    "domain": "retail",
+    "question": "How many products are in each sub-category?",
+    "expected_sql": "SELECT sub_category, COUNT(*) FROM retail.products GROUP BY sub_category"
+  },
+  {
+    "id": 29,
+    "domain": "retail",
+    "question": "What is the total sales for each region?",
+    "expected_sql": "SELECT o.region, SUM(oi.sales) FROM retail.orders o JOIN retail.order_items oi ON o.order_id = oi.order_id GROUP BY o.region"
+  },
+  {
+    "id": 30,
+    "domain": "retail",
+    "question": "What is the total profit for each region?",
+    "expected_sql": "SELECT o.region, SUM(oi.profit) FROM retail.orders o JOIN retail.order_items oi ON o.order_id = oi.order_id GROUP BY o.region"
+  },
+  {
+    "id": 31,
+    "domain": "retail",
+    "question": "What is the total quantity sold?",
+    "expected_sql": "SELECT SUM(quantity) FROM retail.order_items"
+  },
+  {
+    "id": 32,
+    "domain": "retail",
+    "question": "How many orders used each shipping mode?",
+    "expected_sql": "SELECT ship_mode, COUNT(*) FROM retail.orders GROUP BY ship_mode"
+  },
+  {
+    "id": 33,
+    "domain": "retail",
+    "question": "How many returned order items are there?",
+    "expected_sql": "SELECT COUNT(*) FROM retail.order_items WHERE returned = 'Yes'"
+  },
+  {
+    "id": 34,
+    "domain": "retail",
+    "question": "Which products have the highest sales?",
+    "expected_sql": "SELECT p.product_name, SUM(oi.sales) FROM retail.products p JOIN retail.order_items oi ON p.product_key = oi.product_key GROUP BY p.product_name ORDER BY SUM(oi.sales) DESC LIMIT 10"
+  },
+  {
+    "id": 35,
+    "domain": "retail",
+    "question": "Which products have the highest profit?",
+    "expected_sql": "SELECT p.product_name, SUM(oi.profit) FROM retail.products p JOIN retail.order_items oi ON p.product_key = oi.product_key GROUP BY p.product_name ORDER BY SUM(oi.profit) DESC LIMIT 10"
+  },
+  {
+    "id": 36,
+    "domain": "airline",
+    "question": "How many aircraft are there?",
+    "expected_sql": "SELECT COUNT(*) FROM airline.aircrafts"
+  },
+  {
+    "id": 37,
+    "domain": "airline",
+    "question": "How many airports are there?",
+    "expected_sql": "SELECT COUNT(*) FROM airline.airports"
+  },
+  {
+    "id": 38,
+    "domain": "airline",
+    "question": "How many bookings are there?",
+    "expected_sql": "SELECT COUNT(*) FROM airline.bookings"
+  },
+  {
+    "id": 39,
+    "domain": "airline",
+    "question": "How many tickets are there?",
+    "expected_sql": "SELECT COUNT(*) FROM airline.tickets"
+  },
+  {
+    "id": 40,
+    "domain": "airline",
+    "question": "How many flights are there?",
+    "expected_sql": "SELECT COUNT(*) FROM airline.flights"
+  },
+  {
+    "id": 41,
+    "domain": "airline",
+    "question": "How many boarding passes are there?",
+    "expected_sql": "SELECT COUNT(*) FROM airline.boarding_passes"
+  },
+  {
+    "id": 42,
+    "domain": "airline",
+    "question": "What is the total booking amount?",
+    "expected_sql": "SELECT SUM(total_amount) FROM airline.bookings"
+  },
+  {
+    "id": 43,
+    "domain": "airline",
+    "question": "What is the average booking amount?",
+    "expected_sql": "SELECT AVG(total_amount) FROM airline.bookings"
+  },
+  {
+    "id": 44,
+    "domain": "airline",
+    "question": "How many flights are in each status?",
+    "expected_sql": "SELECT status, COUNT(*) FROM airline.flights GROUP BY status"
+  },
+  {
+    "id": 45,
+    "domain": "airline",
+    "question": "How many flights depart from each airport?",
+    "expected_sql": "SELECT departure_airport, COUNT(*) FROM airline.flights GROUP BY departure_airport"
+  },
+  {
+    "id": 46,
+    "domain": "airline",
+    "question": "How many flights arrive at each airport?",
+    "expected_sql": "SELECT arrival_airport, COUNT(*) FROM airline.flights GROUP BY arrival_airport"
+  },
+  {
+    "id": 47,
+    "domain": "airline",
+    "question": "How many seats does each aircraft have?",
+    "expected_sql": "SELECT aircraft_code, COUNT(*) FROM airline.seats GROUP BY aircraft_code"
+  },
+  {
+    "id": 48,
+    "domain": "airline",
+    "question": "What are the different fare conditions?",
+    "expected_sql": "SELECT DISTINCT fare_conditions FROM airline.ticket_flights"
+  },
+  {
+    "id": 49,
+    "domain": "airline",
+    "question": "What is the total amount of ticket flights?",
+    "expected_sql": "SELECT SUM(amount) FROM airline.ticket_flights"
+  },
+  {
+    "id": 50,
+    "domain": "airline",
+    "question": "What is the average ticket flight amount?",
+    "expected_sql": "SELECT AVG(amount) FROM airline.ticket_flights"
+  },
+  {
+    "id": 51,
+    "domain": "airline",
+    "question": "How many ticket flights are there for each fare condition?",
+    "expected_sql": "SELECT fare_conditions, COUNT(*) FROM airline.ticket_flights GROUP BY fare_conditions"
+  },
+  {
+    "id": 52,
+    "domain": "airline",
+    "question": "How many flights use each aircraft?",
+    "expected_sql": "SELECT aircraft_code, COUNT(*) FROM airline.flights GROUP BY aircraft_code"
+  },
+  {
+    "id": 53,
+    "domain": "airline",
+    "question": "What is the average range of the aircraft?",
+    "expected_sql": "SELECT AVG(range) FROM airline.aircrafts"
+  },
+  {
+    "id": 54,
+    "domain": "airline",
+    "question": "Which aircraft has the longest range?",
+    "expected_sql": "SELECT aircraft_code, model, range FROM airline.aircrafts ORDER BY range DESC LIMIT 1"
+  },
+  {
+    "id": 55,
+    "domain": "airline",
+    "question": "How many flights have been cancelled?",
+    "expected_sql": "SELECT COUNT(*) FROM airline.flights WHERE status = 'Cancelled'"
+  },
+  {
+    "id": 56,
+    "domain": "airline",
+    "question": "How many flights have an actual departure time?",
+    "expected_sql": "SELECT COUNT(*) FROM airline.flights WHERE actual_departure IS NOT NULL"
+  },
+  {
+    "id": 57,
+    "domain": "airline",
+    "question": "How many flights have an actual arrival time?",
+    "expected_sql": "SELECT COUNT(*) FROM airline.flights WHERE actual_arrival IS NOT NULL"
+  },
+  {
+    "id": 58,
+    "domain": "retail",
+    "question": "What is the total sales for each product category?",
+    "expected_sql": "SELECT p.category, SUM(oi.sales) FROM retail.products p JOIN retail.order_items oi ON p.product_key = oi.product_key GROUP BY p.category"
+  },
+  {
+    "id": 59,
+    "domain": "retail",
+    "question": "What is the total profit for each product category?",
+    "expected_sql": "SELECT p.category, SUM(oi.profit) FROM retail.products p JOIN retail.order_items oi ON p.product_key = oi.product_key GROUP BY p.category"
+  },
+  {
+    "id": 60,
+    "domain": "it",
+    "question": "How many tickets are there for each priority and queue combination?",
+    "expected_sql": "SELECT priority, queue, COUNT(*) FROM it.it_tickets GROUP BY priority, queue"
+  }
+]
