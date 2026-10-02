@@ -11,7 +11,6 @@ _cached_schema = None
 def get_database_schema():
     global _cached_schema
 
-    # Return cached schema if already loaded
     if _cached_schema is not None:
         return _cached_schema
 
@@ -39,7 +38,22 @@ def get_database_schema():
                 for column in columns
             ]
 
-    # Store schema in memory
     _cached_schema = database_schema
 
     return _cached_schema
+
+
+def get_domain_schema(domain: str):
+    domain = domain.lower().strip()
+
+    if domain not in schemas:
+        raise ValueError(
+            f"Invalid domain '{domain}'. "
+            f"Allowed domains: {', '.join(schemas)}"
+        )
+
+    database_schema = get_database_schema()
+
+    return {
+        domain: database_schema[domain]
+    }

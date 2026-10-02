@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from google import genai
 
-from backend.app.schema_service import get_database_schema
+from backend.app.schema_service import get_domain_schema
 
 
 load_dotenv("backend/.env")
@@ -37,14 +37,17 @@ def format_schema(schema):
     return "\n".join(lines)
 
 
-def generate_sql(question: str):
-    schema = get_database_schema()
+def generate_sql(question: str, domain: str):
+    schema = get_domain_schema(domain)
     schema_text = format_schema(schema)
 
     prompt = f"""
 You are a Text-to-SQL system.
 
 Convert the user's natural-language question into a PostgreSQL SQL query.
+
+SELECTED DATABASE DOMAIN:
+{domain}
 
 DATABASE SCHEMA:
 {schema_text}
@@ -64,7 +67,7 @@ USER QUESTION:
 """
 
     interaction = client.interactions.create(
-       model=model,
+        model=model,
         input=prompt,
     )
 

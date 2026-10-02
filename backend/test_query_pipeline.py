@@ -12,7 +12,7 @@ def test_query_pipeline(monkeypatch):
     Test the complete /query pipeline without calling Gemini.
     """
 
-    def fake_generate_sql(question):
+    def fake_generate_sql(question, domain):
         return "SELECT COUNT(*) FROM retail.customers"
 
     monkeypatch.setattr(
@@ -24,7 +24,8 @@ def test_query_pipeline(monkeypatch):
     response = client.post(
         "/query",
         params={
-            "question": "How many customers are there?"
+            "question": "How many customers are there?",
+            "domain": "retail",
         },
     )
 
@@ -33,18 +34,7 @@ def test_query_pipeline(monkeypatch):
     data = response.json()
 
     assert data["success"] is True
-
-    assert (
-        data["sql"]
-        == "SELECT COUNT(*) FROM retail.customers"
-    )
-
-    assert (
-        data["data"]["rows"]
-        == [[793]]
-    )
-
-    assert (
-        data["answer"]
-        == "The answer is 793."
-    )
+    assert data["domain"] == "retail"
+    assert data["sql"] == "SELECT COUNT(*) FROM retail.customers"
+    assert data["data"]["rows"] == [[793]]
+    assert data["answer"] == "The answer is 793."
