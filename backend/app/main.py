@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from backend.app.database import engine
@@ -8,10 +9,21 @@ from backend.app.sql_service import execute_sql
 from backend.app.query_service import process_question
 
 
-
 app = FastAPI(
     title="Text-to-SQL API",
     version="1.0.0",
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -46,33 +58,11 @@ def health_check():
 def database_schema():
     return get_database_schema()
 
+
 @app.post("/validate-sql")
 def validate_sql_query(sql: str):
     return validate_sql(sql)
 
-@app.post("/execute-sql")
-def execute_sql_query(sql: str):
-    validation = validate_sql(sql)
-
-    if not validation["valid"]:
-        return {
-            "success": False,
-            "error": validation["reason"],
-        }
-
-    try:
-        result = execute_sql(sql)
-
-        return {
-            "success": True,
-            "data": result,
-        }
-
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e),
-        }
 
 @app.post("/execute-sql")
 def execute_sql_query(sql: str):
@@ -100,9 +90,5 @@ def execute_sql_query(sql: str):
 
 
 @app.post("/query")
-def query_database(question: str):
-    return process_question(question)
-
-@app.post("/query")
-def query_database(question: str):
-    return process_question(question)
+def query_database(question: str, domain: str):
+    return process_question(question, domain)
