@@ -1,21 +1,23 @@
 import os
 
 from dotenv import load_dotenv
-from google import genai
+from groq import Groq
 
 from backend.app.schema_service import get_domain_schema
 
 
 load_dotenv("backend/.env")
 
-api_key = os.getenv("GEMINI_API_KEY")
-model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+
+api_key = os.getenv("GROQ_API_KEY")
+model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+
 
 if not api_key:
-    raise RuntimeError("GEMINI_API_KEY is not set")
+    raise RuntimeError("GROQ_API_KEY is not set")
 
 
-client = genai.Client(api_key=api_key)
+client = Groq(api_key=api_key)
 
 
 def format_schema(schema):
@@ -66,11 +68,17 @@ USER QUESTION:
 {question}
 """
 
-    interaction = client.interactions.create(
+    response = client.chat.completions.create(
         model=model,
-        input=prompt,
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        temperature=0,
     )
 
-    sql = interaction.output_text.strip()
+    sql = response.choices[0].message.content.strip()
 
     return sql
