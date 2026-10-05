@@ -1,5 +1,23 @@
+
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import "./App.css";
 
 const domains = {
   it: {
@@ -66,6 +84,48 @@ const domains = {
   },
 };
 
+function getChartType(data) {
+  if (!data || !data.columns || !data.rows) {
+    return null;
+  }
+
+  if (data.columns.length !== 2 || data.rows.length === 0) {
+    return null;
+  }
+
+  const firstValues = data.rows.map((row) => row[0]);
+  const secondValues = data.rows.map((row) => row[1]);
+
+  const numericSecondColumn = secondValues.every(
+    (value) =>
+      value !== null &&
+      value !== "" &&
+      !Number.isNaN(Number(value))
+  );
+
+  if (!numericSecondColumn) {
+    return null;
+  }
+
+  const firstColumnLooksLikeDate = firstValues.every((value) => {
+    if (!value) return false;
+
+    const stringValue = String(value);
+
+    return (
+      /^\d{4}-\d{2}-\d{2}$/.test(stringValue) ||
+      /^\d{4}-\d{2}$/.test(stringValue) ||
+      /^\d{4}$/.test(stringValue)
+    );
+  });
+
+  if (firstColumnLooksLikeDate) {
+    return "line";
+  }
+
+  return "bar";
+}
+
 function App() {
   const [selectedDomain, setSelectedDomain] = useState(null);
   const [question, setQuestion] = useState("");
@@ -74,8 +134,70 @@ function App() {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [executionTime, setExecutionTime] = useState(null);
+  const [corrected, setCorrected] = useState(false);
+  const [originalSql, setOriginalSql] = useState("");
+  const [sessionId] = useState(() => crypto.randomUUID());
+
+  // Query History
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  // Schema Visualization
+  const [schema, setSchema] = useState(null);
+  const [schemaLoading, setSchemaLoading] = useState(false);
+  const [schemaError, setSchemaError] = useState("");
 
   const domain = selectedDomain ? domains[selectedDomain] : null;
+  const chartType = getChartType(data);
+
+  // Load query history from backend
+  const loadHistory = async () => {
+    setHistoryLoading(true);
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/history?limit=20"
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        setHistory(result.history || []);
+      }
+    } catch (err) {
+      console.error("Could not load query history:", err);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  // Load database schema from backend
+  const loadSchema = async () => {
+    setSchemaLoading(true);
+    setSchemaError("");
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/schema"
+      );
+
+      if (!response.ok) {
+        throw new Error("Schema request failed.");
+      }
+
+      const result = await response.json();
+
+      setSchema(result);
+    } catch (err) {
+      console.error("Could not load database schema:", err);
+      setSchemaError(
+        "Could not load database schema. Make sure FastAPI is running."
+      );
+    } finally {
+      setSchemaLoading(false);
+    }
+  };
 
   const selectDomain = (domainKey) => {
     setSelectedDomain(domainKey);
@@ -84,6 +206,12 @@ function App() {
     setSql("");
     setData(null);
     setError("");
+    setExecutionTime(null);
+    setCorrected(false);
+    setOriginalSql("");
+
+    loadHistory();
+    loadSchema();
   };
 
   const goHome = () => {
@@ -93,6 +221,9 @@ function App() {
     setSql("");
     setData(null);
     setError("");
+    setExecutionTime(null);
+    setCorrected(false);
+    setOriginalSql("");
   };
 
   const selectExample = (example) => {
@@ -109,11 +240,15 @@ function App() {
     setSql("");
     setData(null);
     setError("");
+    setExecutionTime(null);
+    setCorrected(false);
+    setOriginalSql("");
   };
 
   const askQuestion = async () => {
     if (!question.trim()) {
       setError("Please enter a question.");
+      setExecutionTime(null);
       return;
     }
 
@@ -122,17 +257,22 @@ function App() {
     setSql("");
     setData(null);
     setError("");
+    setExecutionTime(null);
+    setCorrected(false);
+    setOriginalSql("");
 
     try {
-     const response = await fetch(
-  "http://127.0.0.1:8000/query?question=" +
-    encodeURIComponent(question) +
-    "&domain=" +
-    encodeURIComponent(selectedDomain),
-  {
-    method: "POST",
-  }
-);
+      const response = await fetch(
+        "http://127.0.0.1:8000/query?question=" +
+          encodeURIComponent(question) +
+          "&domain=" +
+          encodeURIComponent(selectedDomain) +
+          "&session_id=" +
+          encodeURIComponent(sessionId),
+        {
+          method: "POST",
+        }
+      );
 
       const result = await response.json();
 
@@ -145,6 +285,11 @@ function App() {
       setAnswer(result.answer || "");
       setSql(result.sql || "");
       setData(result.data || null);
+      setExecutionTime(result.execution_time_ms);
+      setCorrected(result.corrected === true);
+      setOriginalSql(result.original_sql || "");
+
+      await loadHistory();
     } catch (err) {
       setError(
         "Could not connect to the backend. Make sure FastAPI is running."
@@ -153,6 +298,10 @@ function App() {
       setLoading(false);
     }
   };
+
+  // =========================
+  // HOME PAGE
+  // =========================
 
   if (!selectedDomain) {
     return (
@@ -178,7 +327,9 @@ function App() {
             <div className="hero-grid"></div>
 
             <div className="hero-content">
-              <p className="eyebrow">NATURAL LANGUAGE DATABASE INTELLIGENCE</p>
+              <p className="eyebrow">
+                NATURAL LANGUAGE DATABASE INTELLIGENCE
+              </p>
 
               <h1>
                 Ask your data.
@@ -293,6 +444,17 @@ function App() {
     );
   }
 
+  // =========================
+  // DOMAIN DASHBOARD
+  // =========================
+
+  const currentSchema =
+    schema && schema[selectedDomain]
+      ? schema[selectedDomain]
+      : {};
+
+  const schemaTables = Object.entries(currentSchema);
+
   return (
     <div className={`app dashboard-app ${domain.accent}`}>
       <nav className="navbar dashboard-nav">
@@ -313,17 +475,24 @@ function App() {
       <main>
         <section className="dashboard-hero">
           <div>
-            <p className="eyebrow">{domain.shortName} / INTELLIGENCE</p>
+            <p className="eyebrow">
+              {domain.shortName} / INTELLIGENCE
+            </p>
 
             <h1>{domain.name}</h1>
 
-            <p className="dashboard-subtitle">{domain.subtitle}</p>
+            <p className="dashboard-subtitle">
+              {domain.subtitle}
+            </p>
 
-            <p className="dashboard-description">{domain.description}</p>
+            <p className="dashboard-description">
+              {domain.description}
+            </p>
           </div>
 
           <div className="dashboard-number">
             <span>DOMAIN</span>
+
             <strong>
               {selectedDomain === "it"
                 ? "01"
@@ -342,6 +511,122 @@ function App() {
             </div>
           ))}
         </section>
+
+        {/* =========================
+            SCHEMA VISUALIZATION
+            ========================= */}
+
+        <section className="schema-section">
+          <div className="schema-heading">
+            <div>
+              <p className="eyebrow">DATABASE STRUCTURE</p>
+              <h2>Explore the schema.</h2>
+            </div>
+
+            <button
+              className="history-refresh"
+              type="button"
+              onClick={loadSchema}
+              disabled={schemaLoading}
+            >
+              {schemaLoading ? "LOADING..." : "REFRESH ↻"}
+            </button>
+          </div>
+
+          {schemaLoading && !schema ? (
+            <div className="schema-empty">
+              Loading database schema...
+            </div>
+          ) : schemaError ? (
+            <div className="schema-empty">
+              {schemaError}
+            </div>
+          ) : schemaTables.length === 0 ? (
+            <div className="schema-empty">
+              No schema information available.
+            </div>
+          ) : (
+            <div className="schema-table-grid">
+              {schemaTables.map(([tableName, tableData]) => (
+                <details
+                  className="schema-table-card"
+                  key={tableName}
+                >
+                  <summary>
+                    <div>
+                      <span className="schema-table-label">
+                        TABLE
+                      </span>
+
+                      <strong>{tableName}</strong>
+                    </div>
+
+                    <span className="schema-column-count">
+                      {tableData.columns.length} COLUMNS
+                    </span>
+                  </summary>
+
+                  <div className="schema-table-content">
+                    <div className="schema-columns">
+                      <div className="schema-subheading">
+                        <span>COLUMN</span>
+                        <span>TYPE</span>
+                        <span>NULLABLE</span>
+                      </div>
+
+                      {tableData.columns.map((column) => (
+                        <div
+                          className="schema-column-row"
+                          key={column.name}
+                        >
+                          <strong>{column.name}</strong>
+                          <span>{column.type}</span>
+                          <span>
+                            {column.nullable ? "YES" : "NO"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {tableData.relationships &&
+                      tableData.relationships.length > 0 && (
+                        <div className="schema-relationships">
+                          <div className="schema-subheading">
+                            <span>RELATIONSHIPS</span>
+                          </div>
+
+                          {tableData.relationships.map(
+                            (relationship, index) => (
+                              <div
+                                className="schema-relationship-row"
+                                key={`${relationship.column}-${index}`}
+                              >
+                                <strong>
+                                  {relationship.column}
+                                </strong>
+
+                                <span>→</span>
+
+                                <span>
+                                  {relationship.references_schema}.
+                                  {relationship.references_table}.
+                                  {relationship.references_column}
+                                </span>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+                  </div>
+                </details>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* =========================
+            QUERY WORKSPACE
+            ========================= */}
 
         <section className="query-section">
           <div className="query-heading">
@@ -385,6 +670,76 @@ function App() {
           </div>
         </section>
 
+        {/* =========================
+            ANSWER
+            ========================= */}
+
+        {error && (
+          <section className="output-section answer-section">
+            <div className="output-heading">
+              <p className="eyebrow">SYSTEM MESSAGE</p>
+              <h2>Something went wrong.</h2>
+            </div>
+
+            <div className="error-output">{error}</div>
+          </section>
+        )}
+
+        {answer && (
+          <section className="output-section answer-section">
+            <div className="output-heading">
+              <p className="eyebrow">QUERY RESPONSE</p>
+              <h2>Here's what we found.</h2>
+            </div>
+
+            <div className="answer-output">
+              <span>ANSWER</span>
+              <p>{answer}</p>
+            </div>
+
+            {executionTime !== null && (
+              <div className="performance-info">
+                <span>QUERY EXECUTION</span>
+                <strong>
+                  {executionTime.toFixed(2)} ms
+                </strong>
+              </div>
+            )}
+
+            {corrected && (
+              <div className="correction-info">
+                <span>SQL CORRECTION</span>
+                <strong>Automatically corrected</strong>
+              </div>
+            )}
+
+            {corrected && originalSql && (
+              <div className="sql-comparison">
+                <div className="sql-comparison-header">
+                  <span>SQL COMPARISON</span>
+                  <strong>Original → Corrected</strong>
+                </div>
+
+                <div className="sql-comparison-grid">
+                  <div className="sql-comparison-block">
+                    <span>ORIGINAL SQL</span>
+                    <pre>{originalSql}</pre>
+                  </div>
+
+                  <div className="sql-comparison-block">
+                    <span>CORRECTED SQL</span>
+                    <pre>{sql}</pre>
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* =========================
+            EXAMPLE QUESTIONS
+            ========================= */}
+
         <section className="examples-section">
           <div className="examples-heading">
             <p className="eyebrow">GET STARTED</p>
@@ -406,30 +761,9 @@ function App() {
           </div>
         </section>
 
-        {error && (
-          <section className="output-section">
-            <div className="output-heading">
-              <p className="eyebrow">SYSTEM MESSAGE</p>
-              <h2>Something went wrong.</h2>
-            </div>
-
-            <div className="error-output">{error}</div>
-          </section>
-        )}
-
-        {answer && (
-          <section className="output-section">
-            <div className="output-heading">
-              <p className="eyebrow">QUERY RESPONSE</p>
-              <h2>Here's what we found.</h2>
-            </div>
-
-            <div className="answer-output">
-              <span>ANSWER</span>
-              <p>{answer}</p>
-            </div>
-          </section>
-        )}
+        {/* =========================
+            GENERATED SQL
+            ========================= */}
 
         {sql && (
           <section className="output-section">
@@ -442,6 +776,10 @@ function App() {
           </section>
         )}
 
+        {/* =========================
+            DATABASE RESULTS
+            ========================= */}
+
         {data && (
           <section className="output-section">
             <div className="output-heading results-heading">
@@ -452,6 +790,92 @@ function App() {
 
               <span>{data.row_count} ROWS</span>
             </div>
+
+            {chartType && data.rows.length > 0 && (
+  <div className="result-chart">
+    <div className="result-chart-heading">
+      <div>
+        <p className="eyebrow">VISUALIZATION</p>
+        <h3>
+          {chartType === "bar" && "Result breakdown"}
+          {chartType === "line" && "Result trend"}
+          {chartType === "pie" && "Result distribution"}
+        </h3>
+      </div>
+
+      <span>
+        {data.columns[0]} / {data.columns[1]}
+      </span>
+    </div>
+
+    <div className="chart-container">
+      <ResponsiveContainer width="100%" height={360}>
+        {chartType === "bar" && (
+          <BarChart
+            data={data.rows.map((row) => ({
+              name: String(row[0] ?? ""),
+              value: Number(row[1]) || 0,
+            }))}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="name"
+              angle={-25}
+              textAnchor="end"
+              height={80}
+            />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="value" />
+          </BarChart>
+        )}
+
+        {chartType === "line" && (
+          <LineChart
+            data={data.rows.map((row) => ({
+              name: String(row[0] ?? ""),
+              value: Number(row[1]) || 0,
+            }))}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="value"
+              strokeWidth={2}
+            />
+          </LineChart>
+        )}
+
+        {chartType === "pie" && (
+          <PieChart>
+            <Pie
+              data={data.rows.map((row) => ({
+                name: String(row[0] ?? ""),
+                value: Number(row[1]) || 0,
+              }))}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={125}
+              label
+            >
+              {data.rows.map((_, index) => (
+                <Cell key={`cell-${index}`} />
+              ))}
+            </Pie>
+
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        )}
+      </ResponsiveContainer>
+    </div>
+  </div>
+)}
 
             <div className="table-container">
               <table>
@@ -478,6 +902,191 @@ function App() {
             </div>
           </section>
         )}
+
+        {/* =========================
+            QUERY HISTORY
+            ========================= */}
+
+        <section className="history-section">
+          <div className="history-heading">
+            <div>
+              <p className="eyebrow">QUERY HISTORY</p>
+              <h2>Previous questions.</h2>
+            </div>
+
+            <button
+              className="history-refresh"
+              type="button"
+              onClick={loadHistory}
+              disabled={historyLoading}
+            >
+              {historyLoading ? "LOADING..." : "REFRESH ↻"}
+            </button>
+          </div>
+
+          {historyLoading && history.length === 0 ? (
+            <div className="history-empty">
+              Loading query history...
+            </div>
+          ) : history.filter(
+              (item) => item.domain === selectedDomain
+            ).length === 0 ? (
+            <div className="history-empty">
+              No {selectedDomain.toUpperCase()} queries have been recorded
+              yet.
+            </div>
+          ) : (
+            <div className="history-table-wrapper">
+              <table className="history-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>QUESTION</th>
+                    <th>DOMAIN</th>
+                    <th>ROWS</th>
+                    <th>EXECUTION</th>
+                    <th>DATE</th>
+                    <th>SQL</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {history
+                    .filter(
+                      (item) => item.domain === selectedDomain
+                    )
+                    .map((item, index) => (
+                      <tr key={item.id}>
+                        <td className="history-number">
+                          {String(index + 1).padStart(2, "0")}
+                        </td>
+
+                        <td className="history-question">
+                          {item.question}
+
+                          {item.corrected && (
+                            <span className="history-corrected-badge">
+                              CORRECTED
+                            </span>
+                          )}
+                        </td>
+
+                        <td>
+                          <span className="history-domain">
+                            {item.domain.toUpperCase()}
+                          </span>
+                        </td>
+
+                        <td>{item.row_count ?? 0}</td>
+
+                        <td>
+                          {item.execution_time_ms !== null
+                            ? `${Number(
+                                item.execution_time_ms
+                              ).toFixed(2)} ms`
+                            : "—"}
+                        </td>
+
+                        <td className="history-date">
+                          {item.created_at
+                            ? new Date(
+                                item.created_at
+                              ).toLocaleString()
+                            : "—"}
+                        </td>
+
+                        <td>
+                          <details className="history-sql">
+                            <summary>VIEW</summary>
+
+                            <div className="history-details">
+                              <div className="history-detail-block">
+                                <span>QUESTION</span>
+                                <p>{item.question}</p>
+                              </div>
+
+                              {item.answer && (
+                                <div className="history-detail-block">
+                                  <span>ANSWER</span>
+                                  <p>{item.answer}</p>
+                                </div>
+                              )}
+
+                              <div className="history-detail-block">
+                                <span>GENERATED SQL</span>
+                                <pre>{item.sql}</pre>
+                              </div>
+
+                              {item.corrected && (
+                                <div className="history-correction">
+                                  <div className="history-correction-header">
+                                    <span>SQL CORRECTION</span>
+                                    <strong>
+                                      Automatically corrected
+                                    </strong>
+                                  </div>
+
+                                  <div className="history-correction-block">
+                                    <span>ORIGINAL SQL</span>
+                                    <pre>
+                                      {item.original_sql}
+                                    </pre>
+                                  </div>
+
+                                  {item.original_error && (
+                                    <div className="history-correction-block">
+                                      <span>DATABASE ERROR</span>
+                                      <pre>
+                                        {item.original_error}
+                                      </pre>
+                                    </div>
+                                  )}
+
+                                  <div className="history-correction-block">
+                                    <span>CORRECTED SQL</span>
+                                    <pre>{item.sql}</pre>
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="history-detail-grid">
+                                <div>
+                                  <span>ROWS RETURNED</span>
+                                  <strong>
+                                    {item.row_count}
+                                  </strong>
+                                </div>
+
+                                <div>
+                                  <span>EXECUTION TIME</span>
+                                  <strong>
+                                    {item.execution_time_ms !== null
+                                      ? `${Number(
+                                          item.execution_time_ms
+                                        ).toFixed(2)} ms`
+                                      : "N/A"}
+                                  </strong>
+                                </div>
+
+                                <div>
+                                  <span>CREATED AT</span>
+                                  <strong>
+                                    {new Date(
+                                      item.created_at
+                                    ).toLocaleString()}
+                                  </strong>
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
       </main>
 
       <footer className="footer">
@@ -486,10 +1095,13 @@ function App() {
           <span>{domain.name}</span>
         </div>
 
-        <button onClick={goHome}>← Explore another domain</button>
+        <button onClick={goHome}>
+          ← Explore another domain
+        </button>
       </footer>
     </div>
   );
 }
 
 export default App;
+

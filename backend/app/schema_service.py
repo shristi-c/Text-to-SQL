@@ -19,7 +19,9 @@ def get_database_schema():
     database_schema = {}
 
     for schema_name in schemas:
-        tables = inspector.get_table_names(schema=schema_name)
+        tables = inspector.get_table_names(
+            schema=schema_name
+        )
 
         database_schema[schema_name] = {}
 
@@ -29,14 +31,57 @@ def get_database_schema():
                 schema=schema_name,
             )
 
-            database_schema[schema_name][table_name] = [
-                {
-                    "name": column["name"],
-                    "type": str(column["type"]),
-                    "nullable": column["nullable"],
-                }
-                for column in columns
-            ]
+            foreign_keys = inspector.get_foreign_keys(
+                table_name,
+                schema=schema_name,
+            )
+
+            relationships = []
+
+            for foreign_key in foreign_keys:
+                referred_schema = (
+                    foreign_key.get("referred_schema")
+                    or schema_name
+                )
+
+                referred_table = (
+                    foreign_key.get("referred_table")
+                )
+
+                constrained_columns = foreign_key.get(
+                    "constrained_columns",
+                    [],
+                )
+
+                referred_columns = foreign_key.get(
+                    "referred_columns",
+                    [],
+                )
+
+                for local_column, remote_column in zip(
+                    constrained_columns,
+                    referred_columns,
+                ):
+                    relationships.append(
+                        {
+                            "column": local_column,
+                            "references_schema": referred_schema,
+                            "references_table": referred_table,
+                            "references_column": remote_column,
+                        }
+                    )
+
+            database_schema[schema_name][table_name] = {
+                "columns": [
+                    {
+                        "name": column["name"],
+                        "type": str(column["type"]),
+                        "nullable": column["nullable"],
+                    }
+                    for column in columns
+                ],
+                "relationships": relationships,
+            }
 
     _cached_schema = database_schema
 

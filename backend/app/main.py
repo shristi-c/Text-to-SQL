@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from backend.app.database import engine
+from backend.app.database import engine, get_query_history
 from backend.app.schema_service import get_database_schema
 from backend.app.sql_validator import validate_sql
 from backend.app.sql_service import execute_sql
@@ -90,5 +90,27 @@ def execute_sql_query(sql: str):
 
 
 @app.post("/query")
-def query_database(question: str, domain: str):
-    return process_question(question, domain)
+def query_database(
+    question: str,
+    domain: str,
+    session_id: str = None,
+):
+    return process_question(
+        question=question,
+        domain=domain,
+        session_id=session_id,
+    )
+
+
+@app.get("/history")
+def query_history(limit: int = 50):
+    if limit < 1:
+        limit = 1
+
+    if limit > 100:
+        limit = 100
+
+    return {
+        "success": True,
+        "history": get_query_history(limit),
+    }
