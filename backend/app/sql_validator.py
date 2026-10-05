@@ -32,25 +32,21 @@ def validate_sql(sql: str):
 
     sql = sql.strip()
 
-    # Remove one trailing semicolon
     if sql.endswith(";"):
         sql = sql[:-1].strip()
 
-    # Prevent multiple SQL statements
     if ";" in sql:
         return {
             "valid": False,
             "reason": "Multiple SQL statements are not allowed.",
         }
 
-    # Only SELECT queries are allowed
     if not re.match(r"^SELECT\b", sql, re.IGNORECASE):
         return {
             "valid": False,
             "reason": "Only SELECT queries are allowed.",
         }
 
-    # Block dangerous SQL keywords
     words = set(
         re.findall(r"\b[A-Z_]+\b", sql.upper())
     )
@@ -66,13 +62,23 @@ def validate_sql(sql: str):
             ),
         }
 
-    # Check that the query uses an allowed schema
+    # Check schema-qualified table references that appear
+    # after FROM or JOIN.
+    #
+    # This allows table aliases such as:
+    #   SELECT p.name FROM retail.products p
+    #
+    # while still rejecting unauthorized schemas such as:
+    #   SELECT * FROM public.users
     schema_references = re.findall(
-        r"\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\.",
+        r"\b(FROM|JOIN)\s+"
+        r"([a-zA-Z_][a-zA-Z0-9_]*)\."
+        r"([a-zA-Z_][a-zA-Z0-9_]*)",
         sql,
+        re.IGNORECASE,
     )
 
-    for schema_name in schema_references:
+    for _, schema_name, table_name in schema_references:
         if schema_name.lower() not in ALLOWED_SCHEMAS:
             return {
                 "valid": False,
