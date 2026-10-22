@@ -19,6 +19,9 @@ import {
 } from "recharts";
 import "./App.css";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+
 const domains = {
   it: {
     name: "IT Intelligence",
@@ -156,9 +159,7 @@ function App() {
     setHistoryLoading(true);
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/history?limit=20"
-      );
+      const response = await fetch(`${API_BASE_URL}/history?limit=20`);
 
       const result = await response.json();
 
@@ -179,7 +180,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/schema"
+        `${API_BASE_URL}/schema`
       );
 
       if (!response.ok) {
@@ -262,17 +263,12 @@ function App() {
     setOriginalSql("");
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/query?question=" +
-          encodeURIComponent(question) +
-          "&domain=" +
-          encodeURIComponent(selectedDomain) +
-          "&session_id=" +
-          encodeURIComponent(sessionId),
-        {
-          method: "POST",
-        }
-      );
+     const response = await fetch(
+  `${API_BASE_URL}/query?question=${encodeURIComponent(question)}&domain=${encodeURIComponent(selectedDomain)}&session_id=${encodeURIComponent(sessionId)}`,
+  {
+    method: "POST",
+  }
+);
 
       const result = await response.json();
 
